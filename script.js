@@ -34,12 +34,12 @@ const CATEGORY_SHORT = Object.freeze({
 
 const ASSETS = Object.freeze([
   // Cash
-  { id: 'cash-eur', name: 'Наличные EUR', code: 'EUR', pricingCode: 'EUR', category: 'cash', network: 'Рига · наличные', icon: 'cash-eur.svg', colors: ['#4ce2aa', '#1aa97c'] },
-  { id: 'cash-usd', name: 'Наличные USD', code: 'USD', pricingCode: 'USD', category: 'cash', network: 'Рига · наличные', icon: 'cash-usd.svg', colors: ['#78d995', '#2f9b59'] },
-  { id: 'cash-gbp', name: 'Наличные GBP', code: 'GBP', pricingCode: 'GBP', category: 'cash', network: 'Рига · наличные', icon: 'cash-gbp.svg', colors: ['#8db5ff', '#4f69c6'] },
-  { id: 'cash-pln', name: 'Наличные PLN', code: 'PLN', pricingCode: 'PLN', category: 'cash', network: 'Рига · наличные', icon: 'cash-pln.svg', colors: ['#ff8899', '#c84261'] },
-  { id: 'cash-sek', name: 'Наличные SEK', code: 'SEK', pricingCode: 'SEK', category: 'cash', network: 'Рига · наличные', icon: 'cash-sek.svg', colors: ['#ffe36d', '#3f7ad8'] },
-  { id: 'cash-nok', name: 'Наличные NOK', code: 'NOK', pricingCode: 'NOK', category: 'cash', network: 'Рига · наличные', icon: 'cash-nok.svg', colors: ['#f06b79', '#224e9b'] },
+  { id: 'cash-eur', name: 'Наличные EUR', code: 'EUR', pricingCode: 'EUR', category: 'cash', network: 'Наличный обмен', icon: 'cash-eur.svg', colors: ['#4ce2aa', '#1aa97c'] },
+  { id: 'cash-usd', name: 'Наличные USD', code: 'USD', pricingCode: 'USD', category: 'cash', network: 'Наличный обмен', icon: 'cash-usd.svg', colors: ['#78d995', '#2f9b59'] },
+  { id: 'cash-gbp', name: 'Наличные GBP', code: 'GBP', pricingCode: 'GBP', category: 'cash', network: 'Наличный обмен', icon: 'cash-gbp.svg', colors: ['#8db5ff', '#4f69c6'] },
+  { id: 'cash-pln', name: 'Наличные PLN', code: 'PLN', pricingCode: 'PLN', category: 'cash', network: 'Наличный обмен', icon: 'cash-pln.svg', colors: ['#ff8899', '#c84261'] },
+  { id: 'cash-sek', name: 'Наличные SEK', code: 'SEK', pricingCode: 'SEK', category: 'cash', network: 'Наличный обмен', icon: 'cash-sek.svg', colors: ['#ffe36d', '#3f7ad8'] },
+  { id: 'cash-nok', name: 'Наличные NOK', code: 'NOK', pricingCode: 'NOK', category: 'cash', network: 'Наличный обмен', icon: 'cash-nok.svg', colors: ['#f06b79', '#224e9b'] },
 
   // Bank cards and transfers
   { id: 'bank-card-eur', name: 'VISA / Mastercard EUR', code: 'EUR', pricingCode: 'EUR', category: 'bank', network: 'Банковская карта · EUR', icon: 'card.svg', colors: ['#3579e8', '#152d78'] },
@@ -123,7 +123,7 @@ const SAMPLE_REVIEWS = Object.freeze([
   { name: 'Елена', rating: 4, pair: 'Revolut EUR → USDT TRC20', text: 'Обмен прошёл хорошо, курс устроил. Согласование времени заняло немного дольше, чем ожидала, но оператор всё довёл до конца.' },
   { name: 'Олег', rating: 5, pair: 'Bitcoin → Наличные EUR', text: 'Понравилось, что до отправки монет проверили сеть и ещё раз зафиксировали итоговую сумму. Без неожиданностей и скрытых условий.' },
   { name: 'Инга', rating: 5, pair: 'Wise EUR → USD Coin ERC20', text: 'Аккуратный сервис и нормальная коммуникация. На каждом этапе было понятно, что делать дальше и когда ждать зачисление.' },
-  { name: 'Даниэль', rating: 5, pair: 'Наличные USD → Bitcoin', text: 'Быстро согласовали направление и место в Риге. Отдельный плюс за понятный шаблон заявки — не пришлось вручную расписывать все параметры.' },
+  { name: 'Даниэль', rating: 5, pair: 'Наличные USD → Bitcoin', text: 'Быстро согласовали направление и место встречи. Отдельный плюс за понятный шаблон заявки — не пришлось вручную расписывать все параметры.' },
   { name: 'Артём', rating: 4, pair: 'PayPal USD → USDT ERC20', text: 'В целом всё хорошо, деньги получил. Вечером ответили не сразу, поэтому ставлю четыре звезды, но сам обмен прошёл без проблем.' },
   { name: 'София', rating: 5, pair: 'SEPA перевод EUR → USDT TRC20', text: 'Отправила заявку, получила точные реквизиты и подтверждение курса. Всё было вежливо, последовательно и без лишней суеты.' }
 ]);
@@ -402,10 +402,10 @@ function getDestinationDetails(asset) {
 
   return {
     label: 'Предпочтительное место и время встречи',
-    placeholder: 'Например: центр Риги, сегодня после 18:00',
+    placeholder: 'Например: удобное место, сегодня после 18:00',
     requirement: 'Детали встречи',
     summary: 'Согласовать встречу',
-    text: `Для получения ${asset.name} оператор согласует район Риги, время и порядок расчёта.`,
+    text: `Для получения ${asset.name} оператор согласует место, время и порядок расчёта.`,
     hint: 'Точный адрес встречи не публикуется на сайте и согласовывается лично.'
   };
 }
@@ -539,8 +539,7 @@ function formatChartDateTime(timestamp) {
     month: 'long',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'Europe/Riga'
+    minute: '2-digit'
   }).format(new Date(timestamp));
 }
 
@@ -1235,7 +1234,6 @@ function buildOrderMessage(order) {
     'Здравствуйте! Хочу создать заявку в Transfer Express.',
     '',
     `Направление: ${from.name} → ${to.name}`,
-    'Город: Рига, Латвия',
     `Отдаю: ${formatAmount(order.amount, getAmountDigits(from))} ${from.code}`,
     resultLine,
     rateLine,
@@ -1281,7 +1279,7 @@ async function createTelegramOrder() {
 
 function updateGenericTelegramLinks() {
   const { from, to } = getPair();
-  const genericOrder = `Здравствуйте! Хочу уточнить условия обмена ${from.name} → ${to.name} в Риге.`;
+  const genericOrder = `Здравствуйте! Хочу уточнить условия обмена ${from.name} → ${to.name}.`;
   const genericUrl = telegramLink(genericOrder);
   const questionUrl = telegramLink(CONFIG.questionTemplate);
 
