@@ -10,7 +10,7 @@ const CONFIG = Object.freeze({
   telegramUsername: 'transfer_express',
   refreshIntervalMs: 60_000,
   cachedRateMaxAgeMs: 12 * 60 * 60 * 1000,
-  serviceSpreadPercent: 0,
+  serviceRateDivisor: 1.01,
   questionTemplate: 'Здравствуйте, меня интересует следующий вопрос:',
   reviewStorageKey: 'transfer-express-local-reviews-v2',
   rateStoragePrefix: 'transfer-express-rate-v2:'
@@ -452,9 +452,9 @@ function updatePairUI() {
 }
 
 function calculateClientRate(marketRate) {
-  if (!Number.isFinite(marketRate)) return null;
-  const spread = Math.max(0, Number(CONFIG.serviceSpreadPercent) || 0);
-  return marketRate * (1 - spread / 100);
+  if (!Number.isFinite(marketRate) || marketRate <= 0) return null;
+  const divisor = Math.max(1, Number(CONFIG.serviceRateDivisor) || 1.01);
+  return marketRate / divisor;
 }
 
 function setRateLoading() {
@@ -476,11 +476,11 @@ function updateRateUI() {
   if (state.rateMode === 'online') {
     const time = state.rateUpdatedAt?.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) || '';
     if (elements.updatedAt) elements.updatedAt.textContent = `Обновлено в ${time}`;
-    elements.receiveHelpText.textContent = 'Ориентировочный расчёт по открытому API';
+    elements.receiveHelpText.textContent = 'Ориентировочный расчёт по курсу Transfer Express';
   } else if (state.rateMode === 'cached') {
     const time = state.rateUpdatedAt?.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) || '';
     if (elements.updatedAt) elements.updatedAt.textContent = `Кэш от ${time}`;
-    elements.receiveHelpText.textContent = 'API недоступен — показан последний сохранённый курс';
+    elements.receiveHelpText.textContent = 'API недоступен — показан последний сохранённый курс Transfer Express';
   } else if (state.rateMode === 'unavailable') {
     if (elements.updatedAt) elements.updatedAt.textContent = 'Уточнит оператор';
     elements.receiveHelpText.textContent = 'Онлайн-курс недоступен — финальную сумму сообщит оператор';
@@ -648,7 +648,10 @@ function readChartCache() {
 }
 
 function renderChart(points, source, cached = false) {
-  const values = points.map(point => point.value).filter(Number.isFinite);
+  const servicePoints = points
+    .map(point => ({ time: Number(point.time), value: calculateClientRate(Number(point.value)) }))
+    .filter(point => Number.isFinite(point.time) && Number.isFinite(point.value) && point.value > 0);
+  const values = servicePoints.map(point => point.value);
   if (values.length < 2) throw new Error('Not enough chart points');
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -656,11 +659,11 @@ function renderChart(points, source, cached = false) {
   const width = 520;
   const top = 15;
   const bottom = 176;
-  const coords = points.map((point, index) => ({
-    x: points.length === 1 ? width / 2 : index * width / (points.length - 1),
+  const coords = servicePoints.map((point, index) => ({
+    x: servicePoints.length === 1 ? width / 2 : index * width / (servicePoints.length - 1),
     y: bottom - ((point.value - min) / spread) * (bottom - top)
   }));
-  state.chartPoints = points.map(point => ({ time: Number(point.time), value: Number(point.value) }));
+  state.chartPoints = servicePoints;
   state.chartCoords = coords;
   hideChartTooltip();
   const line = coords.map((point, index) => `${index ? 'L' : 'M'}${point.x.toFixed(2)},${point.y.toFixed(2)}`).join(' ');
@@ -678,9 +681,9 @@ function renderChart(points, source, cached = false) {
   elements.chartChange.dataset.trend = change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
   elements.chartMin.textContent = formatRate(min);
   elements.chartMax.textContent = formatRate(max);
-  elements.chartStartDate.textContent = formatChartDate(points[0].time);
-  elements.chartEndDate.textContent = formatChartDate(points[points.length - 1].time);
-  elements.previewNetwork.textContent = cached ? `${source} · кэш` : source;
+  elements.chartStartDate.textContent = formatChartDate(servicePoints[0].time);
+  elements.chartEndDate.textContent = formatChartDate(servicePoints[servicePoints.length - 1].time);
+  elements.previewNetwork.textContent = cached ? `${source} · курс Transfer Express · кэш` : `${source} · курс Transfer Express`;
   elements.chartUpdatedAt.textContent = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   elements.chartState.hidden = true;
   setChartStatus(cached ? 'offline' : 'online', cached ? 'График из кэша' : 'График онлайн');

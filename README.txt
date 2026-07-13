@@ -38,9 +38,9 @@ Open script.js and edit the CONFIG object near the top:
 - telegramUsername
 - refreshIntervalMs
 - cachedRateMaxAgeMs
-- serviceSpreadPercent
+- serviceRateDivisor (default 1.01; displayed Transfer Express rate = market rate / divisor)
 
 Notes:
-- The displayed amount and chart are indicative.
+- The displayed Transfer Express amount and chart are calculated from market API data using the configured service-rate divisor and remain indicative.
 - Final rate, commission, direction availability, AML/KYC requirements and settlement details are confirmed by the operator in Telegram.
 - Never request or collect card PINs, CVV/CVC, passwords or one-time confirmation codes.
